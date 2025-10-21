@@ -1,3 +1,4 @@
+import sys
 import requests
 import os
 import json
@@ -234,8 +235,12 @@ def _display_menu():
     print("5. Check quota")
     print("Q. Quit")
 
-
 def main():
+    # Exit cleanly in non-interactive environments (e.g., Docker Compose, CI/CD)
+    if not sys.stdin.isatty():
+        print("🔹 Non-interactive environment detected — exiting.")
+        sys.exit(0)
+
     try:
         _ensure_bearer()
     except ValueError as exc:
@@ -252,10 +257,16 @@ def main():
 
     while True:
         _display_menu()
-        choice = input("Select an option: ").strip().lower()
+        try:
+            choice = input("Select an option: ").strip().lower()
+        except EOFError:
+            print("\n🔹 Input stream closed — exiting.")
+            break
+
         if choice in {"q", "quit", "exit"}:
             print("Goodbye!")
             break
+
         action = options.get(choice)
         if not action:
             print("Invalid selection. Please try again.")
@@ -271,6 +282,7 @@ def main():
             print(f"Unexpected error: {exc}")
 
         input("\nPress Enter to return to the menu...")
+
 
 
 if __name__ == "__main__":

@@ -133,11 +133,17 @@ python reddit_r00m.py
 
 ## Docker Usage
 
-Build and run using Docker Compose:
+### Build the image
 
 ```bash
-docker-compose up --build
+docker-compose build
 ```
+
+or 
+
+'''bash
+docker build -t reddit-cli .
+'''
 
 This will:
 - Build the Docker image with Python and dependencies
