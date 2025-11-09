@@ -1,0 +1,32 @@
+# ---------- Security scanning container ----------
+FROM alpine:3.20
+
+# install core utilities
+RUN apk add --no-cache bash curl git jq ca-certificates tar
+
+# install Syft (Anchore)
+RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | \
+    sh -s -- -b /usr/local/bin
+
+# install Grype (Anchore)
+RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | \
+    sh -s -- -b /usr/local/bin
+
+# install Trivy (Aqua Security)
+RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | \
+    sh -s -- -b /usr/local/bin
+
+# install Gitleaks (Zachary Rice)
+RUN curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/install.sh | \
+    sh -s -- -b /usr/local/bin
+
+WORKDIR /scan
+COPY . .
+
+# default scan routine
+CMD ["bash", "-c", "\
+  echo '📦 generating SBOM with syft...' && syft . -o json > sbom.json && \
+  echo '🧩 scanning vulnerabilities with grype...' && grype . --fail-on high || true && \
+  echo '🔑 detecting secrets with gitleaks...' && gitleaks detect --source . --report-path gitleaks.json --no-banner || true && \
+  echo '⚙️  running trivy filesystem scan...' && trivy fs . --exit-code 0 --severity HIGH,CRITICAL --no-progress \
+"]

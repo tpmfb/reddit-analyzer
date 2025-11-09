@@ -1,6 +1,6 @@
 services:
-  reddit-cli:
-    image: reddit-cli
+  reddit-analzyer:
+    image: reddit-analyzer
     build: .
     env_file: .env
     stdin_open: true
