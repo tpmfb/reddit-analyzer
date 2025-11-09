@@ -139,16 +139,36 @@ python reddit_r00m.py
 docker-compose build
 ```
 
-or 
+or
 
-'''bash
-docker build -t reddit-cli .
-'''
+```bash
+docker build -t reddit-analyzer .
+```
 
 This will:
 - Build the Docker image with Python and dependencies
 - Load environment variables from `.env`
 - Run the CLI in interactive mode
+
+### Using the Makefile
+
+The project includes a `Makefile` with convenient shortcuts for common Docker operations:
+
+- `make build`: Builds the Docker image.
+- `make run`: Runs the CLI interactively with environment variables loaded.
+- `make shell`: Opens a bash shell inside the container.
+- `make scan`: Runs security scans (builds scanner image, checks for vulnerabilities and secrets).
+- `make sbom`: Generates a Software Bill of Materials (SBOM) file.
+- `make clean`: Removes built images and generated files.
+
+Example:
+
+```bash
+make build
+make run
+```
+
+This simplifies Docker workflows without remembering full commands.
 
 ## API Endpoints
 
